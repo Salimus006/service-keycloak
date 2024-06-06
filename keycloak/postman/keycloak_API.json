@@ -1,0 +1,1589 @@
+{
+	"info": {
+		"_postman_id": "cf7f47b1-ddc4-4d54-95e9-b769eed46145",
+		"name": "keycloak API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5541862"
+	},
+	"item": [
+		{
+			"name": "1- Admin cli",
+			"item": [
+				{
+					"name": "1- Token admin-cli",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        // set admin-cli access and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"admin-cli_access_token\", pm.response.json().access_token);",
+									"        pm.collectionVariables.set(\"admin-cli_refresh_token\", pm.response.json().refresh_token);",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{admin-cli_username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{admin-cli_password}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{admin-cli_client_id}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_master_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_master_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- (If necessary) Refresh admin-cli token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        // set admin-cli access and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"admin-cli_access_token\", pm.response.json().access_token);",
+									"        pm.collectionVariables.set(\"admin-cli_refresh_token\", pm.response.json().refresh_token);",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{admin-cli_username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{admin-cli_password}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{admin-cli_client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{admin-cli_refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_master_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_master_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2- Create realm",
+			"item": [
+				{
+					"name": "1- create a new realm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"realm\": \"{{realm_name}}\",\n  \"notBefore\": 0,\n  \"defaultSignatureAlgorithm\": \"RS256\",\n  \"revokeRefreshToken\": false,\n  \"refreshTokenMaxReuse\": 0,\n  \"accessTokenLifespan\": 300,\n  \"accessTokenLifespanForImplicitFlow\": 900,\n  \"ssoSessionIdleTimeout\": 1800,\n  \"ssoSessionMaxLifespan\": 36000,\n  \"ssoSessionIdleTimeoutRememberMe\": 0,\n  \"ssoSessionMaxLifespanRememberMe\": 0,\n  \"offlineSessionIdleTimeout\": 2592000,\n  \"offlineSessionMaxLifespanEnabled\": false,\n  \"offlineSessionMaxLifespan\": 5184000,\n  \"clientSessionIdleTimeout\": 0,\n  \"clientSessionMaxLifespan\": 0,\n  \"clientOfflineSessionIdleTimeout\": 0,\n  \"clientOfflineSessionMaxLifespan\": 0,\n  \"accessCodeLifespan\": 60,\n  \"accessCodeLifespanUserAction\": 300,\n  \"accessCodeLifespanLogin\": 1800,\n  \"actionTokenGeneratedByAdminLifespan\": 43200,\n  \"actionTokenGeneratedByUserLifespan\": 300,\n  \"oauth2DeviceCodeLifespan\": 600,\n  \"oauth2DevicePollingInterval\": 5,\n  \"enabled\": true,\n  \"sslRequired\": \"external\",\n  \"registrationAllowed\": false,\n  \"registrationEmailAsUsername\": false,\n  \"rememberMe\": false,\n  \"verifyEmail\": false,\n  \"loginWithEmailAllowed\": true,\n  \"duplicateEmailsAllowed\": false,\n  \"resetPasswordAllowed\": false,\n  \"editUsernameAllowed\": false,\n  \"bruteForceProtected\": false,\n  \"permanentLockout\": false,\n  \"maxFailureWaitSeconds\": 900,\n  \"minimumQuickLoginWaitSeconds\": 60,\n  \"waitIncrementSeconds\": 60,\n  \"quickLoginCheckMilliSeconds\": 1000,\n  \"maxDeltaTimeSeconds\": 43200,\n  \"failureFactor\": 30,\n  \"defaultRole\": {\n    \"name\": \"default-roles-realm_test\",\n    \"description\": \"${role_default-roles}\",\n    \"composite\": true,\n    \"clientRole\": false,\n    \"containerId\": \"ba183739-d5ec-41e5-9af4-944636c8c2f1\"\n  },\n  \"requiredCredentials\": [\n    \"password\"\n  ],\n  \"otpPolicyType\": \"totp\",\n  \"otpPolicyAlgorithm\": \"HmacSHA1\",\n  \"otpPolicyInitialCounter\": 0,\n  \"otpPolicyDigits\": 6,\n  \"otpPolicyLookAheadWindow\": 1,\n  \"otpPolicyPeriod\": 30,\n  \"otpSupportedApplications\": [\n    \"totpAppFreeOTPName\",\n    \"totpAppGoogleName\",\n    \"totpAppMicrosoftAuthenticatorName\"\n  ],\n  \"webAuthnPolicyRpEntityName\": \"keycloak\",\n  \"webAuthnPolicySignatureAlgorithms\": [\n    \"ES256\"\n  ],\n  \"webAuthnPolicyRpId\": \"\",\n  \"webAuthnPolicyAttestationConveyancePreference\": \"not specified\",\n  \"webAuthnPolicyAuthenticatorAttachment\": \"not specified\",\n  \"webAuthnPolicyRequireResidentKey\": \"not specified\",\n  \"webAuthnPolicyUserVerificationRequirement\": \"not specified\",\n  \"webAuthnPolicyCreateTimeout\": 0,\n  \"webAuthnPolicyAvoidSameAuthenticatorRegister\": false,\n  \"webAuthnPolicyAcceptableAaguids\": [],\n  \"webAuthnPolicyPasswordlessRpEntityName\": \"keycloak\",\n  \"webAuthnPolicyPasswordlessSignatureAlgorithms\": [\n    \"ES256\"\n  ],\n  \"webAuthnPolicyPasswordlessRpId\": \"\",\n  \"webAuthnPolicyPasswordlessAttestationConveyancePreference\": \"not specified\",\n  \"webAuthnPolicyPasswordlessAuthenticatorAttachment\": \"not specified\",\n  \"webAuthnPolicyPasswordlessRequireResidentKey\": \"not specified\",\n  \"webAuthnPolicyPasswordlessUserVerificationRequirement\": \"not specified\",\n  \"webAuthnPolicyPasswordlessCreateTimeout\": 0,\n  \"webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister\": false,\n  \"webAuthnPolicyPasswordlessAcceptableAaguids\": [],\n  \"scopeMappings\": [\n    {\n      \"clientScope\": \"offline_access\",\n      \"roles\": [\n        \"offline_access\"\n      ]\n    }\n  ],\n  \"clientScopes\": [\n    {\n      \"name\": \"roles\",\n      \"description\": \"OpenID Connect scope for add user roles to the access token\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"false\",\n        \"display.on.consent.screen\": \"true\",\n        \"consent.screen.text\": \"${rolesScopeConsentText}\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"client roles\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-client-role-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"multivalued\": \"true\",\n            \"user.attribute\": \"foo\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"resource_access.${client_id}.roles\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"realm roles\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-realm-role-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"multivalued\": \"true\",\n            \"user.attribute\": \"foo\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"realm_access.roles\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"audience resolve\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-audience-resolve-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"access.token.claim\": \"true\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"phone\",\n      \"description\": \"OpenID Connect built-in scope: phone\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"true\",\n        \"display.on.consent.screen\": \"true\",\n        \"consent.screen.text\": \"${phoneScopeConsentText}\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"phone number\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"phoneNumber\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"phone_number\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"phone number verified\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"phoneNumberVerified\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"phone_number_verified\",\n            \"jsonType.label\": \"boolean\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"offline_access\",\n      \"description\": \"OpenID Connect built-in scope: offline_access\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"consent.screen.text\": \"${offlineAccessScopeConsentText}\",\n        \"display.on.consent.screen\": \"true\"\n      }\n    },\n    {\n      \"name\": \"address\",\n      \"description\": \"OpenID Connect built-in scope: address\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"true\",\n        \"display.on.consent.screen\": \"true\",\n        \"consent.screen.text\": \"${addressScopeConsentText}\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"address\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-address-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"user.attribute.formatted\": \"formatted\",\n            \"user.attribute.country\": \"country\",\n            \"introspection.token.claim\": \"true\",\n            \"user.attribute.postal_code\": \"postal_code\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute.street\": \"street\",\n            \"id.token.claim\": \"true\",\n            \"user.attribute.region\": \"region\",\n            \"access.token.claim\": \"true\",\n            \"user.attribute.locality\": \"locality\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"email\",\n      \"description\": \"OpenID Connect built-in scope: email\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"true\",\n        \"display.on.consent.screen\": \"true\",\n        \"consent.screen.text\": \"${emailScopeConsentText}\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"email\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"email\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"email\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"email verified\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-property-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"emailVerified\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"email_verified\",\n            \"jsonType.label\": \"boolean\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"acr\",\n      \"description\": \"OpenID Connect scope for add acr (authentication context class reference) to the token\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"false\",\n        \"display.on.consent.screen\": \"false\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"acr loa level\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-acr-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"id.token.claim\": \"true\",\n            \"introspection.token.claim\": \"true\",\n            \"access.token.claim\": \"true\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"role_list\",\n      \"description\": \"SAML role list\",\n      \"protocol\": \"saml\",\n      \"attributes\": {\n        \"consent.screen.text\": \"${samlRoleListScopeConsentText}\",\n        \"display.on.consent.screen\": \"true\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"role list\",\n          \"protocol\": \"saml\",\n          \"protocolMapper\": \"saml-role-list-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"single\": \"false\",\n            \"attribute.nameformat\": \"Basic\",\n            \"attribute.name\": \"Role\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"microprofile-jwt\",\n      \"description\": \"Microprofile - JWT built-in scope\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"true\",\n        \"display.on.consent.screen\": \"false\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"upn\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"username\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"upn\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"groups\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-realm-role-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"multivalued\": \"true\",\n            \"user.attribute\": \"foo\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"groups\",\n            \"jsonType.label\": \"String\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"profile\",\n      \"description\": \"OpenID Connect built-in scope: profile\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"true\",\n        \"display.on.consent.screen\": \"true\",\n        \"consent.screen.text\": \"${profileScopeConsentText}\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"website\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"website\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"website\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"full name\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-full-name-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"id.token.claim\": \"true\",\n            \"introspection.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\"\n          }\n        },\n        {\n          \"name\": \"zoneinfo\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"zoneinfo\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"zoneinfo\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"updated at\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"updatedAt\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"updated_at\",\n            \"jsonType.label\": \"long\"\n          }\n        },\n        {\n          \"name\": \"birthdate\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"birthdate\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"birthdate\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"gender\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"gender\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"gender\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"username\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"username\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"preferred_username\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"given name\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"firstName\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"given_name\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"family name\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"lastName\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"family_name\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"profile\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"profile\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"profile\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"middle name\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"middleName\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"middle_name\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"nickname\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"nickname\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"nickname\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"picture\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"picture\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"picture\",\n            \"jsonType.label\": \"String\"\n          }\n        },\n        {\n          \"name\": \"locale\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-usermodel-attribute-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"userinfo.token.claim\": \"true\",\n            \"user.attribute\": \"locale\",\n            \"id.token.claim\": \"true\",\n            \"access.token.claim\": \"true\",\n            \"claim.name\": \"locale\",\n            \"jsonType.label\": \"String\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"web-origins\",\n      \"description\": \"OpenID Connect scope for add allowed web origins to the access token\",\n      \"protocol\": \"openid-connect\",\n      \"attributes\": {\n        \"include.in.token.scope\": \"false\",\n        \"display.on.consent.screen\": \"false\",\n        \"consent.screen.text\": \"\"\n      },\n      \"protocolMappers\": [\n        {\n          \"name\": \"allowed web origins\",\n          \"protocol\": \"openid-connect\",\n          \"protocolMapper\": \"oidc-allowed-origins-mapper\",\n          \"consentRequired\": false,\n          \"config\": {\n            \"introspection.token.claim\": \"true\",\n            \"access.token.claim\": \"true\"\n          }\n        }\n      ]\n    }\n  ],\n  \"defaultDefaultClientScopes\": [\n    \"role_list\",\n    \"profile\",\n    \"email\",\n    \"roles\",\n    \"web-origins\",\n    \"acr\"\n  ],\n  \"defaultOptionalClientScopes\": [\n    \"offline_access\",\n    \"address\",\n    \"phone\",\n    \"microprofile-jwt\"\n  ],\n  \"browserSecurityHeaders\": {\n    \"contentSecurityPolicyReportOnly\": \"\",\n    \"xContentTypeOptions\": \"nosniff\",\n    \"referrerPolicy\": \"no-referrer\",\n    \"xRobotsTag\": \"none\",\n    \"xFrameOptions\": \"SAMEORIGIN\",\n    \"contentSecurityPolicy\": \"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\n    \"xXSSProtection\": \"1; mode=block\",\n    \"strictTransportSecurity\": \"max-age=31536000; includeSubDomains\"\n  },\n  \"smtpServer\": {},\n  \"eventsEnabled\": false,\n  \"eventsListeners\": [\n    \"jboss-logging\"\n  ],\n  \"enabledEventTypes\": [],\n  \"adminEventsEnabled\": false,\n  \"adminEventsDetailsEnabled\": false,\n  \"identityProviders\": [],\n  \"identityProviderMappers\": [],\n  \"components\": {\n    \"org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy\": [\n      {\n        \"name\": \"Trusted Hosts\",\n        \"providerId\": \"trusted-hosts\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {\n          \"host-sending-registration-request-must-match\": [\n            \"true\"\n          ],\n          \"client-uris-must-match\": [\n            \"true\"\n          ]\n        }\n      },\n      {\n        \"name\": \"Max Clients Limit\",\n        \"providerId\": \"max-clients\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {\n          \"max-clients\": [\n            \"200\"\n          ]\n        }\n      },\n      {\n        \"name\": \"Allowed Client Scopes\",\n        \"providerId\": \"allowed-client-templates\",\n        \"subType\": \"authenticated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"allow-default-scopes\": [\n            \"true\"\n          ]\n        }\n      },\n      {\n        \"name\": \"Allowed Protocol Mapper Types\",\n        \"providerId\": \"allowed-protocol-mappers\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {\n          \"allowed-protocol-mapper-types\": [\n            \"saml-user-attribute-mapper\",\n            \"oidc-usermodel-attribute-mapper\",\n            \"oidc-full-name-mapper\",\n            \"oidc-usermodel-property-mapper\",\n            \"saml-user-property-mapper\",\n            \"oidc-sha256-pairwise-sub-mapper\",\n            \"saml-role-list-mapper\",\n            \"oidc-address-mapper\"\n          ]\n        }\n      },\n      {\n        \"name\": \"Full Scope Disabled\",\n        \"providerId\": \"scope\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {}\n      },\n      {\n        \"name\": \"Consent Required\",\n        \"providerId\": \"consent-required\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {}\n      },\n      {\n        \"name\": \"Allowed Protocol Mapper Types\",\n        \"providerId\": \"allowed-protocol-mappers\",\n        \"subType\": \"authenticated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"allowed-protocol-mapper-types\": [\n            \"oidc-usermodel-attribute-mapper\",\n            \"saml-user-attribute-mapper\",\n            \"oidc-sha256-pairwise-sub-mapper\",\n            \"saml-role-list-mapper\",\n            \"saml-user-property-mapper\",\n            \"oidc-address-mapper\",\n            \"oidc-usermodel-property-mapper\",\n            \"oidc-full-name-mapper\"\n          ]\n        }\n      },\n      {\n        \"name\": \"Allowed Client Scopes\",\n        \"providerId\": \"allowed-client-templates\",\n        \"subType\": \"anonymous\",\n        \"subComponents\": {},\n        \"config\": {\n          \"allow-default-scopes\": [\n            \"true\"\n          ]\n        }\n      }\n    ],\n    \"org.keycloak.keys.KeyProvider\": [\n      {\n        \"name\": \"hmac-generated-hs512\",\n        \"providerId\": \"hmac-generated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"priority\": [\n            \"100\"\n          ],\n          \"algorithm\": [\n            \"HS512\"\n          ]\n        }\n      },\n      {\n        \"name\": \"rsa-enc-generated\",\n        \"providerId\": \"rsa-enc-generated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"priority\": [\n            \"100\"\n          ],\n          \"algorithm\": [\n            \"RSA-OAEP\"\n          ]\n        }\n      },\n      {\n        \"name\": \"rsa-generated\",\n        \"providerId\": \"rsa-generated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"priority\": [\n            \"100\"\n          ]\n        }\n      },\n      {\n        \"name\": \"aes-generated\",\n        \"providerId\": \"aes-generated\",\n        \"subComponents\": {},\n        \"config\": {\n          \"priority\": [\n            \"100\"\n          ]\n        }\n      }\n    ]\n  },\n  \"internationalizationEnabled\": false,\n  \"supportedLocales\": [],\n  \"authenticationFlows\": [\n    {\n      \"alias\": \"Account verification options\",\n      \"description\": \"Method with which to verity the existing account\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"idp-email-verification\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Verify Existing Account by Re-authentication\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"Browser - Conditional OTP\",\n      \"description\": \"Flow to determine if the OTP is required for the authentication\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"conditional-user-configured\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"auth-otp-form\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"Direct Grant - Conditional OTP\",\n      \"description\": \"Flow to determine if the OTP is required for the authentication\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"conditional-user-configured\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"direct-grant-validate-otp\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"First broker login - Conditional OTP\",\n      \"description\": \"Flow to determine if the OTP is required for the authentication\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"conditional-user-configured\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"auth-otp-form\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"Handle Existing Account\",\n      \"description\": \"Handle what to do if there is existing account with same email/username like authenticated identity provider\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"idp-confirm-link\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Account verification options\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"Reset - Conditional OTP\",\n      \"description\": \"Flow to determine if the OTP should be reset or not. Set to REQUIRED to force.\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"conditional-user-configured\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"reset-otp\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"User creation or linking\",\n      \"description\": \"Flow for the existing/non-existing user alternatives\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticatorConfig\": \"create unique user config\",\n          \"authenticator\": \"idp-create-user-if-unique\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Handle Existing Account\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"Verify Existing Account by Re-authentication\",\n      \"description\": \"Reauthentication of existing account\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"idp-username-password-form\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"CONDITIONAL\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"First broker login - Conditional OTP\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"browser\",\n      \"description\": \"browser based authentication\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"auth-cookie\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"auth-spnego\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"DISABLED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"identity-provider-redirector\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 25,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 30,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"forms\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"clients\",\n      \"description\": \"Base authentication for clients\",\n      \"providerId\": \"client-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"client-secret\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"client-jwt\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"client-secret-jwt\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 30,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"client-x509\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"ALTERNATIVE\",\n          \"priority\": 40,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"direct grant\",\n      \"description\": \"OpenID Connect Resource Owner Grant\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"direct-grant-validate-username\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"direct-grant-validate-password\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"CONDITIONAL\",\n          \"priority\": 30,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Direct Grant - Conditional OTP\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"docker auth\",\n      \"description\": \"Used by Docker clients to authenticate against the IDP\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"docker-http-basic-authenticator\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"first broker login\",\n      \"description\": \"Actions taken after first broker login with identity provider account, which is not yet linked to any Keycloak account\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticatorConfig\": \"review profile config\",\n          \"authenticator\": \"idp-review-profile\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"User creation or linking\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"forms\",\n      \"description\": \"Username, password, otp and other auth forms.\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"auth-username-password-form\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"CONDITIONAL\",\n          \"priority\": 20,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Browser - Conditional OTP\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"registration\",\n      \"description\": \"registration flow\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"registration-page-form\",\n          \"authenticatorFlow\": true,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"registration form\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"registration form\",\n      \"description\": \"registration form\",\n      \"providerId\": \"form-flow\",\n      \"topLevel\": false,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"registration-user-creation\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"registration-password-action\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 50,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"registration-recaptcha-action\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"DISABLED\",\n          \"priority\": 60,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"registration-terms-and-conditions\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"DISABLED\",\n          \"priority\": 70,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"reset credentials\",\n      \"description\": \"Reset credentials for a user if they forgot their password or something\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"reset-credentials-choose-user\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"reset-credential-email\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 20,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticator\": \"reset-password\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 30,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        },\n        {\n          \"authenticatorFlow\": true,\n          \"requirement\": \"CONDITIONAL\",\n          \"priority\": 40,\n          \"autheticatorFlow\": true,\n          \"flowAlias\": \"Reset - Conditional OTP\",\n          \"userSetupAllowed\": false\n        }\n      ]\n    },\n    {\n      \"alias\": \"saml ecp\",\n      \"description\": \"SAML ECP Profile Authentication Flow\",\n      \"providerId\": \"basic-flow\",\n      \"topLevel\": true,\n      \"builtIn\": true,\n      \"authenticationExecutions\": [\n        {\n          \"authenticator\": \"http-basic-authenticator\",\n          \"authenticatorFlow\": false,\n          \"requirement\": \"REQUIRED\",\n          \"priority\": 10,\n          \"autheticatorFlow\": false,\n          \"userSetupAllowed\": false\n        }\n      ]\n    }\n  ],\n  \"authenticatorConfig\": [\n    {\n      \"alias\": \"create unique user config\",\n      \"config\": {\n        \"require.password.update.after.registration\": \"false\"\n      }\n    },\n    {\n      \"alias\": \"review profile config\",\n      \"config\": {\n        \"update.profile.on.first.login\": \"missing\"\n      }\n    }\n  ],\n  \"requiredActions\": [\n    {\n      \"alias\": \"CONFIGURE_TOTP\",\n      \"name\": \"Configure OTP\",\n      \"providerId\": \"CONFIGURE_TOTP\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 10,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"TERMS_AND_CONDITIONS\",\n      \"name\": \"Terms and Conditions\",\n      \"providerId\": \"TERMS_AND_CONDITIONS\",\n      \"enabled\": false,\n      \"defaultAction\": false,\n      \"priority\": 20,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"UPDATE_PASSWORD\",\n      \"name\": \"Update Password\",\n      \"providerId\": \"UPDATE_PASSWORD\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 30,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"UPDATE_PROFILE\",\n      \"name\": \"Update Profile\",\n      \"providerId\": \"UPDATE_PROFILE\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 40,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"VERIFY_EMAIL\",\n      \"name\": \"Verify Email\",\n      \"providerId\": \"VERIFY_EMAIL\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 50,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"delete_account\",\n      \"name\": \"Delete Account\",\n      \"providerId\": \"delete_account\",\n      \"enabled\": false,\n      \"defaultAction\": false,\n      \"priority\": 60,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"webauthn-register\",\n      \"name\": \"Webauthn Register\",\n      \"providerId\": \"webauthn-register\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 70,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"webauthn-register-passwordless\",\n      \"name\": \"Webauthn Register Passwordless\",\n      \"providerId\": \"webauthn-register-passwordless\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 80,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"VERIFY_PROFILE\",\n      \"name\": \"Verify Profile\",\n      \"providerId\": \"VERIFY_PROFILE\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 90,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"delete_credential\",\n      \"name\": \"Delete Credential\",\n      \"providerId\": \"delete_credential\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 100,\n      \"config\": {}\n    },\n    {\n      \"alias\": \"update_user_locale\",\n      \"name\": \"Update User Locale\",\n      \"providerId\": \"update_user_locale\",\n      \"enabled\": true,\n      \"defaultAction\": false,\n      \"priority\": 1000,\n      \"config\": {}\n    }\n  ],\n  \"browserFlow\": \"browser\",\n  \"registrationFlow\": \"registration\",\n  \"directGrantFlow\": \"direct grant\",\n  \"resetCredentialsFlow\": \"reset credentials\",\n  \"clientAuthenticationFlow\": \"clients\",\n  \"dockerAuthenticationFlow\": \"docker auth\",\n  \"attributes\": {\n    \"cibaBackchannelTokenDeliveryMode\": \"poll\",\n    \"cibaExpiresIn\": \"120\",\n    \"cibaAuthRequestedUserHint\": \"login_hint\",\n    \"oauth2DeviceCodeLifespan\": \"600\",\n    \"oauth2DevicePollingInterval\": \"5\",\n    \"parRequestUriLifespan\": \"60\",\n    \"cibaInterval\": \"5\",\n    \"realmReusableOtpCode\": \"false\"\n  },\n  \"keycloakVersion\": \"24.0.4\",\n  \"userManagedAccessAllowed\": false,\n  \"clientProfiles\": {\n    \"profiles\": []\n  },\n  \"clientPolicies\": {\n    \"policies\": []\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Get realms",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"   if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        var responseBody = pm.response.json();",
+									"",
+									"        responseBody.forEach((myRealm, i) => {",
+									"            var realmName = myRealm.realm;",
+									"            // set id of ADMIN role in collection variables",
+									"            if(realmName == pm.collectionVariables.get('realm_name')) {",
+									"                pm.collectionVariables.set('realm_uuid', myRealm.id);",
+									"            } else if (realmName == pm.collectionVariables.get('realm_master_name')) {",
+									"                pm.collectionVariables.set('realm_master_uuid', myRealm.id);",
+									"            }",
+									"        });",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3- Clients",
+			"item": [
+				{
+					"name": "1- Create a new client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"clientId\" : \"{{client_id}}\",\n    \"name\": \"{{client_name}}\",\n    \"enabled\" : true,\n    \"secret\": \"{{client_secret}}\",\n    \"redirectUris\": [\"{{client_redirect_uri}}\"],\n    \"standardFlowEnabled\": true,\n    \"implicitFlowEnabled\": false,\n    \"directAccessGrantsEnabled\": true,\n    \"serviceAccountsEnabled\": true,\n    \"publicClient\": false,\n    \"frontchannelLogout\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Get clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        var responseBody = pm.response.json();",
+									"        responseBody.forEach((client, i) => {",
+									"            if(client.name == pm.collectionVariables.get('client_name')) {",
+									"                // set collection variable client_id and client_uuid with the value of clientId",
+									"                pm.collectionVariables.set('client_id', pm.response.json()[i].clientId);",
+									"                pm.collectionVariables.set('client_uuid', pm.response.json()[i].id);",
+									"            }",
+									"        });",
+									"    }",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3-(Optional) Get client By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        var client = pm.response.json();",
+									"        pm.collectionVariables.set('client_uuid', client.id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients/{{client_uuid}}",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients",
+								"{{client_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4-(Optional) Update client config",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"standardFlowEnabled\": true,\n    \"implicitFlowEnabled\": false,\n    \"directAccessGrantsEnabled\": true,\n    \"serviceAccountsEnabled\": true,\n    \"publicClient\": false,\n    \"frontchannelLogout\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients/{{client_uuid}}",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients",
+								"{{client_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4-(Optional) Get client config",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients/{{client_uuid}}",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients",
+								"{{client_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5-(Optional) Get client secret",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/clients/{{client_uuid}}/client-secret",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"clients",
+								"{{client_uuid}}",
+								"client-secret"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4- Roles",
+			"item": [
+				{
+					"name": "1- Create realm role (ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{admin_role}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/roles",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Create realm role (USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{user_role}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/roles",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3- Get realm roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        var responseBody = pm.response.json();",
+									"",
+									"        responseBody.forEach((role, i) => {",
+									"            var roleName = role.name;",
+									"            // set id of ADMIN and USER roles in incollection variables",
+									"            if(roleName == pm.collectionVariables.get('admin_role')) {",
+									"                pm.collectionVariables.set('admin_role_uuid', role.id);",
+									"            } else if (roleName == pm.collectionVariables.get('user_role')) {",
+									"                pm.collectionVariables.set('user_role_uuid', role.id);",
+									"            }",
+									"        });",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/roles",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5- Users",
+			"item": [
+				{
+					"name": "1- Create user (admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"attributes\": {\n        \"attribute_key\": \"test_value\"\n    },\n    \"credentials\": [\n        {\n        \"temporary\": false,\n        \"type\": \"password\",\n        \"value\": \"{{my_admin_password}}\"\n        }\n    ],\n    \"username\": \"{{my_admin_username}}\",\n    \"firstName\": \"admin\",\n    \"lastName\": \"ADMIN\",\n    \"email\": \"admin@gmail.com\",\n    \"emailVerified\": \"false\",\n    \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Create user (simple_user)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"attributes\": {\n        \"attribute_key\": \"test_value\"\n    },\n    \"credentials\": [\n        {\n        \"temporary\": false,\n        \"type\": \"password\",\n        \"value\": \"{{my_user_password}}\"\n        }\n    ],\n    \"username\": \"{{my_user_username}}\",\n    \"firstName\": \"user\",\n    \"lastName\": \"USER\",\n    \"email\": \"userr@gmail.com\",\n    \"emailVerified\": \"false\",\n    \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3- Get All users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        var responseBody = pm.response.json();",
+									"",
+									"        responseBody.forEach((user, i) => {",
+									"            if(user.username == pm.collectionVariables.get('my_admin_username')) {",
+									"                // set collection variable client_test_id with the value of clientId",
+									"                pm.collectionVariables.set('my_admin_uuid', user.id);",
+									"            } else if (user.username == pm.collectionVariables.get('my_user_username')) {",
+									"                pm.collectionVariables.set('my_user_uuid', user.id);",
+									"            }",
+									"        });",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4- Assign role to user (ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n   {\n        \"id\": \"{{admin_role_uuid}}\",\n        \"name\": \"{{admin_role}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users/{{my_admin_uuid}}/role-mappings/realm",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users",
+								"{{my_admin_uuid}}",
+								"role-mappings",
+								"realm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5- Assign role to user (USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n   {\n        \"id\": \"{{user_role_uuid}}\",\n        \"name\": \"{{user_role}}\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users/{{my_user_uuid}}/role-mappings/realm",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users",
+								"{{my_user_uuid}}",
+								"role-mappings",
+								"realm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6-(Optional) Get user admin's roles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users/{{my_admin_uuid}}/role-mappings/realm",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users",
+								"{{my_admin_uuid}}",
+								"role-mappings",
+								"realm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7-(Optional) get user's roles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/users/{{my_user_uuid}}/role-mappings/realm",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"users",
+								"{{my_user_uuid}}",
+								"role-mappings",
+								"realm"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6- Client token",
+			"item": [
+				{
+					"name": "1- with credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log('Status code is 200');",
+									"        var responseBody = pm.response.json();",
+									"        ",
+									"        //set client access and refresh token in collection variables",
+									"        pm.collectionVariables.set('client_access_token', responseBody.access_token);",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7- Users's token",
+			"item": [
+				{
+					"name": "1. Admin's token with password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Check\", () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log(\"status code is 200\");",
+									"        var responseBody = pm.response.json();",
+									"        ",
+									"        // set admin access token and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"my_admin_access_token\", responseBody.access_token);",
+									"        pm.collectionVariables.set(\"my_admin_refresh_token\", responseBody.refresh_token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{my_admin_username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{my_admin_password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. User's token with password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Check\", () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log(\"status code is 200\");",
+									"        var responseBody = pm.response.json();",
+									"        ",
+									"        // set admin access token and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"my_user_access_token\", responseBody.access_token);",
+									"        pm.collectionVariables.set(\"my_user_refresh_token\", responseBody.refresh_token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{my_user_username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{my_user_password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3- (Optional) Introspect admin token validity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "token",
+									"value": "{{my_admin_access_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token/introspect",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token",
+								"introspect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4- (If necessary) Refresh admin's token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Check\", () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log(\"status code is 200\");",
+									"        var responseBody = pm.response.json();",
+									"        ",
+									"        // set admin access token and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"my_admin_access_token\", responseBody.access_token);",
+									"        pm.collectionVariables.set(\"my_admin_refresh_token\", responseBody.refresh_token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{my_admin_refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5- (If necessary) Refresh user's token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Check\", () => {",
+									"    if(pm.response.code == 200) {",
+									"        console.log(\"status code is 200\");",
+									"        var responseBody = pm.response.json();",
+									"        ",
+									"        // set admin access token and refresh token in collection variables",
+									"        pm.collectionVariables.set(\"my_user_access_token\", responseBody.access_token);",
+									"        pm.collectionVariables.set(\"my_user_refresh_token\", responseBody.refresh_token);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{my_user_refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8- Sessions",
+			"item": [
+				{
+					"name": "1. Client sessions state",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/client-session-stats",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"client-session-stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Export realm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin-cli_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/admin/realms/{{realm_name}}/partial-export?exportClients=true&exportGroupsAndRoles=true",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{realm_name}}",
+								"partial-export"
+							],
+							"query": [
+								{
+									"key": "exportClients",
+									"value": "true"
+								},
+								{
+									"key": "exportGroupsAndRoles",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. realm RSA public key",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{keycloak_base_url}}/realms/{{realm_name}}/protocol/openid-connect/certs",
+							"host": [
+								"{{keycloak_base_url}}"
+							],
+							"path": [
+								"realms",
+								"{{realm_name}}",
+								"protocol",
+								"openid-connect",
+								"certs"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "keycloak_base_url",
+			"value": "http://localhost:8180",
+			"type": "string"
+		},
+		{
+			"key": "admin-cli_client_id",
+			"value": "admin-cli",
+			"type": "string"
+		},
+		{
+			"key": "admin-cli_username",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "admin-cli_password",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "admin-cli_access_token",
+			"value": ""
+		},
+		{
+			"key": "admin-cli_refresh_token",
+			"value": ""
+		},
+		{
+			"key": "realm_name",
+			"value": "spring_boot_service",
+			"type": "string"
+		},
+		{
+			"key": "realm_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "realm_master_name",
+			"value": "master",
+			"type": "string"
+		},
+		{
+			"key": "realm_master_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "spring_boot_service_client",
+			"type": "string"
+		},
+		{
+			"key": "client_name",
+			"value": "spring_boot_service",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "HmoDZeRFplZzcshdVKCF9IqczDj1cFBw",
+			"type": "string"
+		},
+		{
+			"key": "client_redirect_uri",
+			"value": "http://localhost:8081/*",
+			"type": "string"
+		},
+		{
+			"key": "client_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "client_access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_role",
+			"value": "ADMIN",
+			"type": "string"
+		},
+		{
+			"key": "user_role",
+			"value": "USER",
+			"type": "string"
+		},
+		{
+			"key": "admin_role_uuid",
+			"value": ""
+		},
+		{
+			"key": "user_role_uuid",
+			"value": ""
+		},
+		{
+			"key": "my_admin_username",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_admin_password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_admin_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_admin_access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_admin_refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_user_username",
+			"value": "user",
+			"type": "string"
+		},
+		{
+			"key": "my_user_password",
+			"value": "1234",
+			"type": "string"
+		},
+		{
+			"key": "my_user_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_user_access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "my_user_refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
