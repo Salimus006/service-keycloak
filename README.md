@@ -6,10 +6,15 @@
 - KEYCLOAK_CLIENT_ID: spring_boot_service_client
 - KEYCLOAK_CLIENT_SECRET: HmoDZeRFplZzcshdVKCF9IqczDj1cFBw
 
-### Used Keycloak and postgres versions ([See docker-compose](./docker-compose.yml))
-docker-compose start postgres container on port 5432 and keycloak on 8180
-- Keycloak image : quay.io/keycloak/keycloak:24.0.5
-- Postgres image postgres:14-alpine 
+### Used technology versions (See  [docker-compose](./docker-compose.yml) and [pom.xml](./pom.xml))
+- Java: <b>17</b>
+- spring boot: <b>3.2.6</b>
+- spring-boot-starter-security
+- spring-boot-starter-oauth2-client
+- spring-boot-starter-oauth2-resource-server
+- testcontainers-keycloak for IT
+- <b>Keycloak</b> image (for keycloak server): <b>quay.io/keycloak/keycloak:24.0.5</b>
+- <b>Postgres</b> image postgres (to store keycloak data (users, roles, etc)): <b>14-alpine</b>
 
 ### Start the application
 Before start spring boot application we must start keycloak server ans postgres db.
@@ -25,8 +30,35 @@ Then run
 mvn spring-boot:run
 ```
 ### Postman section 
-- Go to postman and import ([keycloak_API.json](./keycloak/postman/keycloak_API.json))
+- Go to postman and import file ==> ([keycloak_API.json](./keycloak/postman/keycloak_API.json))
+- After importing, you will get a new collection (Keycloak API) with several sub-folders like in the picture bellow 
 
+![image info](./pictures/keycloak_collection.png)
+
+<ol>
+  <li> <i><b>Admin cli: </b></i> Contains requests to make to get and refresh access token for admin keycloak user. admin-cli token is used after to manage realms, roles, clients and users. </li>
+  <li> <i><b>Create realm: </b></i> Requests to create a new realm and get a realm list </li>
+  <li> <i><b>Clients: </b></i> Client's requests to create and retrieve clients list </li>
+  <li> <i><b>Roles: </b></i> Endpoints to create and get realm roles (ADMIN and USER roles) </li>
+  <li> <i><b>Users: </b></i> In this folder you have requests to create and assign roles to users (admin and user)</li>
+  <li> <i><b>Client token: </b></i> The folder contains request to get a new access token for the client created in step 3.</li>
+  <li> <i><b>Users' token: </b></i> Requests to get a new access and refresh token for user and admin users.</li>
+  <li> <i><b>Sessions: </b></i> Queries regarding keycloak sessions.</li>
+</ol>
+
+- The imported file will also create a collection variables like shown bellow.
+
+![image info](./pictures/collection_variables.png)
+  
+-  In this collection variables you have variable (like keycloak_base_url, username and password for admin-cli, realm_name to create) with default values. You can modify them if necessary.
+<ol>
+  <li> <i><b>keycloak_base_url: </b></i>Keycloak server host.</li>
+  <li> <i><b>admin-cli_username and admin-cli_password: </b></i>Keycloak admin username and password</li>
+  <li> <i><b>realm_name: </b></i>Realm name to create</li>
+  <li> <i><b>client_id, client_name and client_secret: </b></i>To specify the client to create in keycloak server</li>
+  <li> <i><b>admin_role, user_role: </b></i>By default admin_role=ADMIN, user_role=USER. But it remains configurable</li>
+  <li> <i><b>my_admin_username, my_admin_password, my_user_username, my_user_password: </b></i>To indicate the username and password for admin and user users</li>
+</ol>
 
 ### Lunch and test swagger API 
 Go to the [Swagger](http://localhost:8081/swagger-ui/index.html) to test the spring boot application
