@@ -2,19 +2,15 @@ package com.example.service;
 
 import com.example.service.controllers.AbstractKeycloakTest;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
-@TestPropertySource(
-		properties = {
-		"keycloak.client-realm=spring_boot_service",
-				"keycloak.client-id=spring_boot_service_client",
-				"keycloak.client-secret=HmoDZeRFplZzcshdVKCF9IqczDj1cFBw"}
-)
+@ActiveProfiles("test")
 class ServiceApplicationTests extends AbstractKeycloakTest {
 
 	@DynamicPropertySource

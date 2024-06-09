@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/countries")
@@ -30,7 +31,7 @@ public class CountryController {
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     @Operation(summary = "To get a country by ID. (Must have USER or ADMIN privilege)")
     public Country findById(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @PostMapping

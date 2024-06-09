@@ -1,0 +1,8 @@
+keycloak:
+  enabled: true
+  client-realm: spring_boot_service
+  client-id: spring_boot_service_client
+  jwt-url: ${keycloak.base-url}/realms/${keycloak.client-realm}/protocol/openid-connect/token
+  logout-url: ${keycloak.base-url}/realms/${keycloak.client-realm}/protocol/openid-connect/logout
+  client-secret: HmoDZeRFplZzcshdVKCF9IqczDj1cFBw
+

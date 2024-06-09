@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @WebAppConfiguration
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 public class AuthenticationControllerTest extends AbstractKeycloakTest {
 
     @Autowired
@@ -54,9 +56,6 @@ public class AuthenticationControllerTest extends AbstractKeycloakTest {
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> KEYCLOAK.getAuthServerUrl() + "/realms/" + REALM_NAME);
         registry.add("keycloak.base-url", () -> KEYCLOAK.getAuthServerUrl());
-        registry.add("keycloak.client-realm", () -> REALM_NAME);
-        registry.add("keycloak.client-id", () -> CLIENT_ID);
-        registry.add("keycloak.client-secret", () -> CLIENT_SECRET);
     }
 
     @Order(1)

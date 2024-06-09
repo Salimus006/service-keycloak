@@ -17,6 +17,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -33,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractKeycloakTest {
-    protected static RestTemplate restTemplate = new RestTemplate();
-
     protected static final String REALM_IMPORT_FILE = "/keycloak/imports/realm-export.json";
     protected static final String REALM_NAME = "spring_boot_service";
     protected static final String CLIENT_NAME = "spring_boot_service";
@@ -48,6 +47,8 @@ public abstract class AbstractKeycloakTest {
     private static String ADMIN_ROLE_UUID;
     private static String USER_ROLE_UUID;
     protected static KeycloakContainer KEYCLOAK;
+
+    protected static RestTemplate restTemplate = new RestTemplate();
 
     @BeforeAll
     public static void beforeAll() throws URISyntaxException, VerificationException {

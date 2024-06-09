@@ -3,7 +3,6 @@ package com.example.service.controllers;
 import com.example.service.exceptions.ConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,22 +34,6 @@ public class ExceptionsHandler {
         });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-
-    /**
-     * Handle Spring security forbidden exception
-     *
-     * @param ex
-     * @param request
-     * @return
-     */
-    @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<Object> handleAccessDeniedException(
-            Exception ex, WebRequest request) {
-
-        Map<String, String> errors = new HashMap<>();
-        errors.put("Message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errors);
     }
 
     /**

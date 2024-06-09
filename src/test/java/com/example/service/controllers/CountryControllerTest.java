@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @WebAppConfiguration
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 public class CountryControllerTest extends AbstractKeycloakTest {
 
     @Autowired
@@ -48,9 +50,6 @@ public class CountryControllerTest extends AbstractKeycloakTest {
     static void registerResourceServerIssuerProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> KEYCLOAK.getAuthServerUrl() + "/realms/" + REALM_NAME);
         registry.add("keycloak.base-url", () -> KEYCLOAK.getAuthServerUrl());
-        registry.add("keycloak.client-realm", () -> REALM_NAME);
-        registry.add("keycloak.client-id", () -> CLIENT_ID);
-        registry.add("keycloak.client-secret", () -> CLIENT_SECRET);
     }
 
     @Test
@@ -189,6 +188,13 @@ public class CountryControllerTest extends AbstractKeycloakTest {
     }
 
     @Test
+    void countryNotFound() throws Exception {
+        mvc.perform(get("/api/countries/{id}", 100)
+                        .contentType(MediaType.APPLICATION_JSON).header("authorization", "Bearer " + ADMIN_ACCESS_TOKEN))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void saveCountryTest() throws Exception {
         String spain = "{\"id\": 6, \"name\": \"SPAIN\"}";
 
@@ -200,5 +206,17 @@ public class CountryControllerTest extends AbstractKeycloakTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(6)))
                 .andExpect(jsonPath("$.name", is("SPAIN")));
+    }
+
+    @Test
+    void saveCountryConflictTest() throws Exception {
+        String UK = "{\"id\": 1, \"name\": \"UK\"}";
+
+        // try to save a country with an existing id
+        mvc.perform(post("/api/countries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("authorization", "Bearer " + ADMIN_ACCESS_TOKEN)
+                        .content(UK))
+                .andExpect(status().isConflict());
     }
 }
