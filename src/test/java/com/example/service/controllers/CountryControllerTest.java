@@ -69,9 +69,9 @@ public class CountryControllerTest extends AbstractKeycloakTest {
         mapForm.add("username", ADMIN_USER_NAME);
         mapForm.add("password", ADMIN_USER_PASSWORD);
 
-        CountryControllerTest.KeyCloakToken keyCloakToken = getTokenFromKeycloak(keyCloakCallHeaders, mapForm);
+        TokenDTO tokenDTO = getTokenFromKeycloak(keyCloakCallHeaders, mapForm);
 
-        String token = keyCloakToken.accessToken();
+        String token = tokenDTO.accessToken();
 
         Assertions.assertNotNull(token);
         TokenVerifier<AccessToken> verifier = TokenVerifier.create(token, AccessToken.class);
@@ -102,9 +102,9 @@ public class CountryControllerTest extends AbstractKeycloakTest {
         mapForm.add("username", USER_USER_NAME);
         mapForm.add("password", USER_USER_PASSWORD);
 
-        CountryControllerTest.KeyCloakToken keyCloakToken = getTokenFromKeycloak(keyCloakCallHeaders, mapForm);
+        TokenDTO tokenDTO = getTokenFromKeycloak(keyCloakCallHeaders, mapForm);
 
-        String token = keyCloakToken.accessToken();
+        String token = tokenDTO.accessToken();
 
         Assertions.assertNotNull(token);
         TokenVerifier<AccessToken> verifier = TokenVerifier.create(token, AccessToken.class);
@@ -134,7 +134,7 @@ public class CountryControllerTest extends AbstractKeycloakTest {
         mapForm.add("client_id", CLIENT_ID);
         mapForm.add("client_secret", CLIENT_SECRET);
 
-        CountryControllerTest.KeyCloakToken keycloakResponse = this.getTokenFromKeycloak(headers, mapForm);
+        TokenDTO keycloakResponse = this.getTokenFromKeycloak(headers, mapForm);
 
         // get the access token to verify
         String retrievedAccessToken = keycloakResponse.accessToken();

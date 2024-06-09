@@ -17,10 +17,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.DockerClientFactory;
@@ -209,30 +206,31 @@ public abstract class AbstractKeycloakTest {
         return KEYCLOAK.getKeycloakAdminClient().tokenManager().getAccessToken();
     }
 
-    protected KeyCloakToken getTokenFromKeycloak(HttpHeaders headers,
-                                                                     MultiValueMap<String, String> mapForm) throws URISyntaxException {
+    protected TokenDTO getTokenFromKeycloak(HttpHeaders headers,
+                                            MultiValueMap<String, String> mapForm) throws URISyntaxException {
 
         URI authorizationUri = new URIBuilder(String.format("%s/realms/%s/protocol/openid-connect/token",
                 KEYCLOAK.getAuthServerUrl(), REALM_NAME)).build();
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(mapForm, headers);
 
-        ResponseEntity<KeyCloakToken> response = restTemplate.exchange(authorizationUri,
+        ResponseEntity<TokenDTO> response = restTemplate.exchange(authorizationUri,
                 HttpMethod.POST,
-                request, KeyCloakToken.class);
+                request, TokenDTO.class);
         return response.getBody();
     }
 
-    protected record KeyCloakToken(String accessToken, int expiresIn, String tokenType) {
+    protected record TokenDTO(String accessToken, int expiresIn, String tokenType, String refreshToken) {
 
         @JsonCreator
-        public KeyCloakToken(@JsonProperty("access_token") final String accessToken,
-                                @JsonProperty("expires_in") final int expiresIn,
-                                @JsonProperty("token_type") final String tokenType) {
+        public TokenDTO(@JsonProperty("access_token") final String accessToken,
+                        @JsonProperty("expires_in") final int expiresIn,
+                        @JsonProperty("token_type") final String tokenType,
+                        @JsonProperty("refresh_token") final String refreshToken) {
             this.accessToken = accessToken;
             this.expiresIn = expiresIn;
             this.tokenType = tokenType;
+            this.refreshToken= refreshToken;
         }
     }
-
 }

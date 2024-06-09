@@ -58,9 +58,8 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate/logout")
     @Operation(summary = "(Keycloak logout) Destroy user's session")
-    public ResponseEntity<Object> logout(/*@RequestHeader("Authorization") String accessToken,*/
-            @PathParam("access_token") String accessToken,
-            @PathParam("refresh_token") String refreshToken) {
+    public ResponseEntity<Object> logout(@PathParam("access_token") String accessToken,
+                                         @PathParam("refresh_token") String refreshToken) {
         // build keycloak http headers
         HttpHeaders headers = buildKeycloakHttpHeaders();
         headers.setBearerAuth(accessToken);
