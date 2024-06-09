@@ -35,8 +35,8 @@ public class AuthenticationController {
 
     @GetMapping("/info")
     @Operation(summary = "To get a converted JWT. (Must be authenticated)")
-    public Authentication authentication(Authentication authentication) {
-        return authentication;
+    public ResponseEntity<Authentication> authentication(Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK).body(authentication);
     }
 
     @PostMapping("/authenticate/password")
