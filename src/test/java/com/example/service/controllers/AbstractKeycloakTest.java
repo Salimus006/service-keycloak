@@ -226,9 +226,9 @@ public abstract class AbstractKeycloakTest {
     protected record KeyCloakToken(String accessToken, int expiresIn, String tokenType) {
 
         @JsonCreator
-        protected KeyCloakToken(@JsonProperty("access_token") final String accessToken,
-                              @JsonProperty("expires_in") final int expiresIn,
-                              @JsonProperty("token_type") final String tokenType) {
+        public KeyCloakToken(@JsonProperty("access_token") final String accessToken,
+                                @JsonProperty("expires_in") final int expiresIn,
+                                @JsonProperty("token_type") final String tokenType) {
             this.accessToken = accessToken;
             this.expiresIn = expiresIn;
             this.tokenType = tokenType;
