@@ -73,7 +73,7 @@ After, we have to create users (user and admin), and assign them USER and ADMIN 
     <li>Go to folder <b>(1- Admin cli)</b> and run the request (1- Token admin-cli) to get a new access token for admin keycloak user</li>
     <li>Go to folder <b>4- Roles</b> and run request (3- Get realm roles)</li>
     <li>Go then to the folder <b>(5- Users)</b> and run the requests from 1 to 5 <b>(Create user (admin), Create user (simple_user), Get All users, Assign role to user (ADMIN), Assign role to user (USER))</b></li>
-    <li>After, you can go to [Swagger](http://localhost:8081/swagger-ui/index.html) and test to connect with the two created users (username: user, password: 1234 OR username: admin, password: 1234)</li>
+    <li>After, you can go to <a href="http://localhost:8081/swagger-ui/index.html">Swagger interface</a> and test to connect with the two created users (username: user, password: 1234 OR username: admin, password: 1234)</li>
     <li>Try to access to application routes with the generated access_token</li>
 </ol>
 
