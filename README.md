@@ -81,6 +81,34 @@ After, we have to create users (user and admin), and assign them USER and ADMIN 
 Keycloak admin interface is available on [link](http://localhost:8180/admin/master/console).
 You can connect with user: admin, password:admin 
 
+### Postgres DB 
+Postgres db is configured (See [docker-compose-file](docker-compose.yml) ) to be used by keycloak.
+- dbname: keycloakdb
+- username: keycloak
+- password: keycloak
+- url connexion: jdbc:postgresql://postgres:5432/keycloakdb
+
+#### Connect to postgres container shell in interactive mode
+-   Get the container id with cdm ```docker ps```
+    ![image info](./pictures/container_id.png)
+
+
+- Run in IT ```docker exec -it <mycontainer> bash```
+
+
+- Show keycloakdb tables  ```\dt```
+  ![image info](./pictures/keycloack_tables.png)
+
+
+-   <b>check realms</b> ```select id, name from realm;```
+    ![image info](./pictures/keycloack_realm.png)
+
+
+-   <b>Check clients </b> ```select id, client_id from client where client_id='spring_boot_service_client';```
+
+
+-   <b>Check users</b> ```select id, email, username from user_entity u where u.realm_id IN (select id from realm r where r.name='spring_boot_service');```
+    ![image info](./pictures/keycloak_users.png)
 
 
 
