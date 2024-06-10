@@ -93,8 +93,10 @@ Postgres db is configured (See [docker-compose-file](docker-compose.yml) ) to be
     ![image info](./pictures/container_id.png)
 
 
-- Run in IT ```docker exec -it <mycontainer> bash```
+- Run in IT:  ```docker exec -it <mycontainer> bash```
 
+
+-   Connect to the keycloakdb with psql client: ```psql keycloakdb keycloak```  
 
 - Show keycloakdb tables  ```\dt```
   ![image info](./pictures/keycloack_tables.png)
