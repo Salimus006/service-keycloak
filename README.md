@@ -90,27 +90,35 @@ Postgres db is configured (See [docker-compose-file](docker-compose.yml) ) to be
 
 #### Connect to postgres container shell in interactive mode
 -   Get the container id with cdm ```docker ps```
-    ![image info](./pictures/container_id.png)
+
+![image info](./pictures/container_id.png)
 
 
 - Run in IT:  ```docker exec -it <mycontainer> bash```
 
 
--   Connect to the keycloakdb with psql client: ```psql keycloakdb keycloak```  
+-   Connect to the keycloakdb with psql client: ```psql keycloakdb keycloak``` 
+
 
 - Show keycloakdb tables  ```\dt```
-  ![image info](./pictures/keycloack_tables.png)
+
+
+![image info](./pictures/keycloack_tables.png)
 
 
 -   <b>check realms</b> ```select id, name from realm;```
-    ![image info](./pictures/keycloack_realm.png)
+
+
+![image info](./pictures/keycloack_realm.png)
 
 
 -   <b>Check clients </b> ```select id, client_id from client where client_id='spring_boot_service_client';```
 
 
 -   <b>Check users</b> ```select id, email, username from user_entity u where u.realm_id IN (select id from realm r where r.name='spring_boot_service');```
-    ![image info](./pictures/keycloak_users.png)
+    
+
+![image info](./pictures/keycloak_users.png)
 
 
 
