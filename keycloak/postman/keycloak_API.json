@@ -157,6 +157,18 @@
 			"item": [
 				{
 					"name": "1- create a new realm",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -643,6 +655,37 @@
 			"item": [
 				{
 					"name": "1- Create user (admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 201) {",
+									"        console.log('User created ');",
+									"",
+									"        // retrieve username from the request body ",
+									"        var req = JSON.parse(request.data);",
+									"        var username = req.username;",
+									"",
+									"        // get userId from response header",
+									"        var location = pm.response.headers.get('Location');",
+									"        var userId = location.substring(location.lastIndexOf(\"/\")+1, location.length);",
+									"",
+									"        // set collection variable my_admin_uuid with the id of the created user ",
+									"        if(username == pm.collectionVariables.get('my_admin_username')) {",
+									"            pm.collectionVariables.set('my_admin_uuid', userId);",
+									"        } else if (username == pm.collectionVariables.get('my_user_username')) {",
+									"            pm.collectionVariables.set('my_user_uuid', userId);",
+									"        }",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -682,6 +725,37 @@
 				},
 				{
 					"name": "2- Create user (simple_user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Check Status', () => {",
+									"    if(pm.response.code == 201) {",
+									"        console.log('User created ');",
+									"",
+									"        // retrieve username from the request body ",
+									"        var req = JSON.parse(request.data);",
+									"        var username = req.username;",
+									"",
+									"        // get userId from response header",
+									"        var location = pm.response.headers.get('Location');",
+									"        var userId = location.substring(location.lastIndexOf(\"/\")+1, location.length);",
+									"",
+									"        // set collection variable my_admin_uuid with the id of the created user ",
+									"        if(username == pm.collectionVariables.get('my_admin_username')) {",
+									"            pm.collectionVariables.set('my_admin_uuid', userId);",
+									"        } else if (username == pm.collectionVariables.get('my_user_username')) {",
+									"            pm.collectionVariables.set('my_user_uuid', userId);",
+									"        }",
+									"    }   ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",

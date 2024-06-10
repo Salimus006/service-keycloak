@@ -1,12 +1,13 @@
 # Demo for using spring boot application with keycloak OIDC
 
-### Required env variables to start service
+### Default env variables configured in pom.xml:
 - KEYCLOAK_BASE_URL: http://localhost:8180
 - KEYCLOAK_REALM_NAME: spring_boot_service
 - KEYCLOAK_CLIENT_ID: spring_boot_service_client
 - KEYCLOAK_CLIENT_SECRET: HmoDZeRFplZzcshdVKCF9IqczDj1cFBw
 
-### Used technology versions (See  [docker-compose](./docker-compose.yml) and [pom.xml](./pom.xml))
+### Used technologies and importante dependencies (See  [docker-compose](./docker-compose.yml) and [pom.xml](./pom.xml))
+- Docker (You need to have docker installed)
 - Java: <b>17</b>
 - spring boot: <b>3.2.6</b>
 - spring-boot-starter-security
@@ -18,18 +19,21 @@
 
 ### Start the application
 Before start spring boot application we must start keycloak server ans postgres db.
+
 #### run docker compose to start keycloak and postgres
 ```console
 docker-compose -f docker-compose.yml up
 ```
+
 #### run spring boot application
-set your env variables in pom.xml for (KEYCLOAK_BASE_URL, KEYCLOAK_REALM_NAME, KEYCLOAK_CLIENT_ID and KEYCLOAK_CLIENT_SECRET)
+You can modify default env variables in pom.xml for (KEYCLOAK_BASE_URL, KEYCLOAK_REALM_NAME, KEYCLOAK_CLIENT_ID and KEYCLOAK_CLIENT_SECRET)
 
 Then run 
 ```console
 mvn spring-boot:run
 ```
 ### Postman section 
+Postman is used to interact with Keycloak server. The file keycloak_API.json contains the queries needed to configure Keycloak. 
 - Go to postman and import file ==> ([keycloak_API.json](./keycloak/postman/keycloak_API.json))
 - After importing, you will get a new collection (Keycloak API) with several sub-folders like in the picture bellow 
 
@@ -60,8 +64,20 @@ mvn spring-boot:run
   <li> <i><b>my_admin_username, my_admin_password, my_user_username, my_user_password: </b></i>To indicate the username and password for admin and user users</li>
 </ol>
 
-### Lunch and test swagger API 
-Go to the [Swagger](http://localhost:8081/swagger-ui/index.html) to test the spring boot application
+### Test spring boot application
+The application contains some protected routes with role management.<br>
+To test these routes we need to do some additional configuration in keycloak.
+The command executed previously ```docker-compose -f docker-compose.yml up``` has already created the realm, the client and realm roles (ADMIN and USER)<br>
+After, we have to create users (user and admin), and assign them USER and ADMIN roles. for this you can use the requests imported previously into postman :
+<ol>
+    <li>Go to folder <b>4- Roles</b> and run request 3- Get realm roles</li>
+    <li>Go to folder <b>(1- Admin cli)</b> and run the request (1- Token admin-cli) to get a new access token for admin keycloak user</li>
+    <li>Go then to the folder <b>(5- Users)</b> and run the requests from 1 to 5 <b>(Create user (admin), Create user (simple_user), Get All users, Assign role to user (ADMIN), Assign role to user (USER))</b></li>
+    <li>Finally, you can go to [Swagger](http://localhost:8081/swagger-ui/index.html) and test to connect with the two created users 
+(username: user, password: 1234 OR username: admin, password: 1234)</li>
+</ol>
+
+
 
 
 
